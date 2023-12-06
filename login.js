@@ -9,11 +9,13 @@ async function onLogin(e) {
     email: email.value,
     password: password.value,
   };
-  const response = await axios
+  await axios
     .post("http://localhost:3000/user/login", loginDetails)
     .then((response) => {
       if (response.status === 200) {
-        alert("Login Successfully");
+        alert(response.data.message);
+
+        localStorage.setItem("token", response.data.token);
 
         window.location.href = "./expense.html";
       } else {
@@ -26,3 +28,6 @@ async function onLogin(e) {
 }
 
 form.addEventListener("submit", onLogin);
+
+const jwt =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c";

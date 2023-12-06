@@ -14,7 +14,11 @@ async function onSubmit(e) {
     description: description.value,
     category: category.value,
   };
-  await axios.post(`${api}/addExpense`, expDets);
+  const token = localStorage.getItem("token");
+  // { headers: { Authorization: token } }
+  await axios.post(`${api}/addExpense`, expDets, {
+    headers: { Authorization: token },
+  });
 
   //   li(expDets);
 }
@@ -25,12 +29,17 @@ function delButton(obj) {
   delBtn.appendChild(document.createTextNode("Delete Expense"));
 
   delBtn.addEventListener("click", (e) => deleteBtn(e, obj));
+
   async function deleteBtn(e, obj) {
-    const exDet = await axios.get(`${api}/getExpenses`);
-    const expObj = exDet.data.expenses.find((d) => d.id === obj.id);
+    // const exDet = await axios.get(`${api}/getExpenses`);
+    // const expObj = exDet.data.expenses.find((d) => d.id === obj.id);
+
+    const token = localStorage.getItem("token");
 
     let li = e.target.parentElement;
-    await axios.delete(`${api}/deleteExpense/${expObj.id}`);
+    await axios.delete(`${api}/deleteExpense/${obj.id}`, {
+      headers: { Authorization: token },
+    });
     ulItems.removeChild(li);
   }
 
@@ -50,11 +59,15 @@ function li(obj) {
 form.addEventListener("submit", onSubmit);
 
 window.addEventListener("DOMContentLoaded", async () => {
-  await axios.get(`${api}/getExpenses`).then((expense) => {
-    if (expense.data.length !== 0) {
-      for (let i = 0; i < expense.data.expenses.length; i++) {
-        li(expense.data.expenses[i]);
+  const token = localStorage.getItem("token");
+
+  await axios
+    .get(`${api}/getExpenses`, { headers: { Authorization: token } })
+    .then((response) => {
+      if (response.data.expenses.length !== 0) {
+        for (let i = 0; i < response.data.expenses.length; i++) {
+          li(response.data.expenses[i]);
+        }
       }
-    }
-  });
+    });
 });

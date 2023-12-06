@@ -11,13 +11,22 @@ app.use(cors());
 
 //Databse
 const sequelize = require("./util/database");
+const Expense = require("./models/expense");
+const User = require("./models/user");
+
+const userAuth = require("./middleware/auth");
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
 
 app.use("/user", userRouter);
-app.use("/expense", expenseRouter);
+// app.use(userAuth.authenticate);
+app.use("/expense", userAuth.authenticate, expenseRouter);
 app.use(errController.error404);
+
+// // Associations
+User.hasMany(Expense);
+Expense.belongsTo(User);
 
 sequelize
   .sync()

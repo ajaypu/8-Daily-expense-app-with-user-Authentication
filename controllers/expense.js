@@ -13,7 +13,7 @@ exports.addExpense = (req, res, next) => {
       .json({ success: false, message: "Parameters missing" });
   }
 
-  Expense.create({ amount, description, category })
+  Expense.create({ amount, description, category, userId: req.user.id })
     .then((expense) => {
       return res.status(201).json({ expense, success: true });
     })
@@ -23,7 +23,10 @@ exports.addExpense = (req, res, next) => {
 };
 
 exports.getExpenses = (req, res, next) => {
-  Expense.findAll()
+  // Expense.findAll()
+  Expense.findAll({ where: { userId: req.user.id } })
+    // req.user
+    //   .getExpenses()
     .then((expenses) => {
       return res.status(200).json({ expenses, success: true });
     })
@@ -32,10 +35,23 @@ exports.getExpenses = (req, res, next) => {
     });
 };
 
+// exports.deleteExpense = (req, res, next) => {
+//   const expId = req.params.id;
+
+//   Expense.destroy({ where: { id: expId } })
+//     .then((response) => {
+//       res.status(203).json({ success: true, message: "Deleted Successfully" });
+//     })
+//     .catch((err) => {
+//       res.status(400).json({ error: err });
+//     });
+// };
+
 exports.deleteExpense = (req, res, next) => {
   const expId = req.params.id;
 
-  Expense.destroy({ where: { id: expId } })
+  console.log("ExpenIDDD", expId);
+  Expense.destroy({ where: { userId: expId } })
     .then((response) => {
       res.status(203).json({ success: true, message: "Deleted Successfully" });
     })
